@@ -140,7 +140,8 @@ classdef LoRaUtils < handle
            else
                 mChirp = obj.genSymbol(0);
            end
-            x = -sig.*mChirp;
+            x = sig.*mChirp;
+%             disp(['Anlge of First Point:',num2str(angle(sig(1)))]);
         end
         
         function [Data,N] = rfile(obj, filename, samples)
@@ -175,6 +176,7 @@ classdef LoRaUtils < handle
                 fwrite(fid,single(real_part),'single');
                 fwrite(fid,single(im_part),'single');
             end
+            disp('File Write Finish!');
             fclose(fid);
         end
         
@@ -183,9 +185,9 @@ classdef LoRaUtils < handle
             %   Detailed explanation goes here 
             mwin = obj.chirp_n/2;
             A = movmean(abs(data),mwin);
-            B = data(A >= max(A)/3);
-            figure;
-                plot(1:size(A,2),A);
+            B = data(A >= max(A)/4);
+%             figure;
+%                 plot(1:size(A,2),A);
         end
         
         function [snr_db,nPow,sPow] = calSNR(obj, data)
@@ -249,7 +251,7 @@ classdef LoRaUtils < handle
             upChirp = obj.genSymbol(0).*off_sig;
             downChirp = obj.genSymbol(0,1).*off_sig;
             real_sig = repmat(upChirp,1,8);
-            real_sig = [real_sig,obj.genSymbol(2^obj.sf-24).*off_sig,obj.genSymbol(2^obj.sf-32).*off_sig];
+            real_sig = [real_sig,obj.genSymbol(2^obj.sf-0).*off_sig,obj.genSymbol(2^obj.sf-0).*off_sig];
             real_sig = [real_sig,downChirp,downChirp,downChirp(1:end/4)];
             for i = codeArray(1:end)
                 real_sig = [real_sig,obj.genSymbol(2^obj.sf-i).*off_sig];
